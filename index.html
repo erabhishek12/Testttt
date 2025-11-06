@@ -12,151 +12,114 @@
 }
 
 body {
-    background: transparent; /* keep page bg as-is */
+    background: transparent;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* === PILL CONTAINER (button-like) === */
+/* === PILL BUTTON STYLE === */
 .counter-container {
-    position: relative;
+    /* sizing */
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
-    min-width: 240px;            /* wider, like a button */
-    height: 56px;                /* pill height */
-    padding: 0 28px;             /* horizontal padding */
-    border-radius: 9999px;       /* full pill */
-    background: linear-gradient(180deg, #ff7a52 0%, #ff5e3a 100%);
+    padding: 10px 18px;
+    min-height: 46px;              /* short like a button */
+    height: auto;
+    width: auto;
+    
+    /* look & feel (orange pill) */
+    background: linear-gradient(180deg, #ff7a3d 0%, #ff5533 100%);
+    border-radius: 9999px;         /* pill shape */
     border: none;
+    overflow: visible;
 
-    /* soft depth + inner shine similar to the reference */
+    /* soft raised button shadows */
     box-shadow:
-        0 10px 22px rgba(0, 0, 0, 0.45),         /* outer drop shadow */
-        0 2px 0 rgba(255, 255, 255, 0.05),       /* subtle top rim */
-        inset 0 1px 0 rgba(255, 255, 255, 0.35), /* inner top highlight */
-        inset 0 -10px 16px rgba(0, 0, 0, 0.18);  /* inner bottom shading */
-    overflow: hidden;
-    cursor: default;
-    transition: transform .08s ease, box-shadow .12s ease, filter .12s ease;
+        0 10px 24px rgba(0, 0, 0, 0.35),
+        inset 0 2px 0 rgba(255, 255, 255, 0.25),
+        inset 0 -4px 10px rgba(0, 0, 0, 0.35);
+    
+    /* interaction */
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
 }
 
-/* shimmering top highlight band */
-.counter-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient( to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0) 40% );
-    pointer-events: none;
-}
-
-/* faint glow ring */
-.counter-container::after {
-    content: '';
-    position: absolute;
-    inset: -6px;
-    border-radius: 9999px;
-    box-shadow: 0 0 40px rgba(255, 120, 70, 0.25);
-    pointer-events: none;
-}
-
-/* interactive feel (optional) */
 .counter-container:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.38),
+        inset 0 3px 0 rgba(255, 255, 255, 0.28),
+        inset 0 -4px 10px rgba(0, 0, 0, 0.35);
     filter: brightness(1.02);
 }
+
 .counter-container:active {
-    transform: translateY(1px);
+    transform: translateY(0);
     box-shadow:
-        0 6px 16px rgba(0, 0, 0, 0.45),
-        0 2px 0 rgba(255, 255, 255, 0.04),
-        inset 0 2px 0 rgba(255, 255, 255, 0.3),
-        inset 0 -8px 14px rgba(0, 0, 0, 0.2);
+        0 6px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* === CONTENT INSIDE THE PILL === */
-/* keep your Om/icon—smaller and inline */
+/* remove the old glowing/shimmer card effects */
+.counter-container::before { display: none; }
+
+/* left icon (ॐ or 👁) */
 .om-symbol {
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
-    margin: 0;                   /* no vertical gap in pill */
-    animation: pulse 2s ease-in-out infinite;
+    margin: 0;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.98);
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    animation: none;               /* keep it calm like a button */
 }
 
-/* compact label */
+/* main text pieces arranged inline */
 .counter-label {
-    color: rgba(255,255,255,0.95);
+    color: #fff;
     font-size: 12px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin: 0;                   /* inline */
-    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    text-transform: none;
+    letter-spacing: .3px;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
 
-/* remove card look; make inline holder for numbers */
+/* remove inner box; make it inline */
 .counter-display {
     background: transparent;
     border-radius: 0;
     padding: 0;
     box-shadow: none;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 8px;
+    display: inline;
 }
 
-/* bold number like a CTA text */
+/* number next to the label */
 .counter-number {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg, #fff, #ffe7dc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
-    animation: countUp 0.5s ease-out;
+    margin-left: 6px;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: .5px;
+    color: #fff;                   /* solid white for readability */
+    background: none;
+    -webkit-text-fill-color: #fff;
+    animation: none;               /* no pop-in */
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
 
+/* tiny meta text (e.g., "Visitors") kept compact */
 .visitors-text {
+    margin-left: 8px;
     font-size: 11px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.9);
-    margin: 0;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    font-weight: 600;
+    color: rgba(255,255,255,.9);
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
 }
 
-/* small decorative dots can sit at the end */
-.decorative-dots {
-    display: inline-flex;
-    gap: 5px;
-    margin: 0 0 0 4px;
-}
-.dot {
-    width: 6px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    animation: dotPulse 1.5s ease-in-out infinite;
-}
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
+/* decorative dots not needed on a button; hide to save space */
+.decorative-dots { display: none; }
+.dot { display: none; }
 
-/* pulse + dot animations kept */
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.08); opacity: 1; }
-}
-@keyframes countUp {
-    from { transform: translateY(6px); opacity: 0; }
-    to   { transform: translateY(0);   opacity: 1; }
-}
-@keyframes dotPulse {
-    0%, 100% { transform: scale(1); opacity: 0.65; }
-    50% { transform: scale(1.25); opacity: 1; }
-}
-
-/* corner positioning helper (unchanged) */
+/* optional corner placement helper */
 .bottom-right {
     position: fixed;
     bottom: 20px;
@@ -164,17 +127,10 @@ body {
     z-index: 9999;
 }
 
-/* responsive: keep pill shape, allow wrap if needed */
-@media (max-width: 420px) {
-    .counter-container {
-        min-width: 200px;
-        height: 52px;
-        padding: 0 20px;
-        gap: 8px;
-    }
-    .counter-number { font-size: 18px; }
-    .counter-label  { font-size: 11px; }
-    .visitors-text  { font-size: 10px; }
+/* keep keyframes in case you re-enable animations elsewhere */
+@keyframes countUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
     </style>
 </head>
