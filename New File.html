@@ -1,0 +1,1276 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="theme-color" content="#F7C948">
+  <meta name="description" content="Radha Naam Jaap - One-tap devotional launcher with Premanand Maharaj ji">
+
+  <title>🪔 Radha Naam • One-Tap Launcher</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-512.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==================== RESET & BASE ==================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Color Palette - Saffron/Amber/Golden */
+      --saffron: #FF9933;
+      --amber: #F7C948;
+      --gold: #FFD700;
+      --warm-white: #FFF8E7;
+      --deep-orange: #D97706;
+      --shadow: rgba(217, 119, 6, 0.3);
+
+      /* Fonts */
+      --font-head: 'Rajdhani', sans-serif;
+      --font-body: 'Poppins', sans-serif;
+
+      /* Timing */
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: linear-gradient(135deg, #FFF8E7 0%, #FFE5B4 50%, #FFF8E7 100%);
+      color: #1F2937;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Radial Saffron Glow Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(circle, rgba(255, 153, 51, 0.15) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Subtle Mandala Pattern */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="%23FF9933" stroke-width="0.5" opacity="0.1"/><circle cx="100" cy="100" r="60" fill="none" stroke="%23F7C948" stroke-width="0.5" opacity="0.1"/><circle cx="100" cy="100" r="40" fill="none" stroke="%23FFD700" stroke-width="0.5" opacity="0.1"/></svg>');
+      background-size: 300px 300px;
+      background-position: center;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==================== HEADER ==================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 248, 231, 0.7);
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .header-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      color: var(--deep-orange);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .header-btn:hover, .header-btn:focus {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+      outline: none;
+    }
+
+    .header-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ==================== MAIN STAGE ==================== */
+    main {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 150px);
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    .app-title {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--deep-orange);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 8px rgba(217, 119, 6, 0.2);
+    }
+
+    .app-subtitle {
+      font-size: 0.9rem;
+      color: #92400E;
+      margin-bottom: 2.5rem;
+      opacity: 0.8;
+    }
+
+    /* ==================== START BUTTON ==================== */
+    .start-container {
+      position: relative;
+      margin: 2rem 0;
+    }
+
+    #startBtn {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--saffron), var(--amber));
+      cursor: pointer;
+      box-shadow:
+        0 8px 24px var(--shadow),
+        0 0 0 4px rgba(255, 215, 0, 0.3),
+        inset 0 2px 8px rgba(255, 255, 255, 0.3);
+      transition: all 0.4s var(--ease);
+      overflow: hidden;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #startBtn {
+        animation: none;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow:
+          0 8px 24px var(--shadow),
+          0 0 0 4px rgba(255, 215, 0, 0.3),
+          inset 0 2px 8px rgba(255, 255, 255, 0.3);
+      }
+      50% {
+        box-shadow:
+          0 8px 32px rgba(217, 119, 6, 0.5),
+          0 0 0 8px rgba(255, 215, 0, 0.4),
+          inset 0 2px 8px rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    #startBtn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow:
+        0 12px 32px rgba(217, 119, 6, 0.4),
+        0 0 0 6px rgba(255, 215, 0, 0.5),
+        inset 0 2px 8px rgba(255, 255, 255, 0.3);
+    }
+
+    #startBtn:active {
+      transform: scale(0.98);
+    }
+
+    #startBtn:focus {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .btn-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .maharaj-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--gold);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background: #fff; /* fallback before image loads */
+    }
+
+    .start-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .tap-hint {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #92400E;
+      opacity: 0.7;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 0.7; transform: translateY(0); }
+    }
+
+    /* Ripple Effect */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(0);
+      animation: ripple-animation 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* ==================== FLOATING PARTICLES ==================== */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0.2;
+      animation: float 10s infinite ease-in-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .particle {
+        animation: none;
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.3;
+      }
+      90% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 12s; }
+    .particle:nth-child(2) { left: 30%; animation-delay: 2s; animation-duration: 14s; }
+    .particle:nth-child(3) { left: 50%; animation-delay: 4s; animation-duration: 11s; }
+    .particle:nth-child(4) { left: 70%; animation-delay: 1s; animation-duration: 13s; }
+    .particle:nth-child(5) { left: 90%; animation-delay: 3s; animation-duration: 15s; }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 1rem;
+      text-align: center;
+      background: rgba(255, 248, 231, 0.5);
+      border-top: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .ticker {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      color: var(--deep-orange);
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker span {
+      display: inline-block;
+      animation: scroll-text 15s linear infinite;
+    }
+
+    @keyframes scroll-text {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .copyright {
+      font-size: 0.7rem;
+      color: #92400E;
+      opacity: 0.6;
+    }
+
+    /* ==================== MUTE TOGGLE ==================== */
+    .mute-toggle {
+      position: fixed;
+      bottom: 6rem;
+      right: 1rem;
+      z-index: 50;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+      transition: all 0.3s var(--ease);
+    }
+
+    .mute-toggle:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: scale(1.1);
+    }
+
+    /* ==================== MODALS & SHEETS ==================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeInOverlay 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeInOverlay {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #FFFBF0, #FFF8E7);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 215, 0, 0.3);
+      position: relative;
+      animation: slideUp 0.4s var(--ease);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: none;
+      background: rgba(217, 119, 6, 0.1);
+      color: var(--deep-orange);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(217, 119, 6, 0.2);
+      transform: rotate(90deg);
+    }
+
+    .modal-title {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      color: var(--deep-orange);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .upi-id {
+      background: rgba(255, 215, 0, 0.2);
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+      color: #92400E;
+      margin: 1rem 0;
+      word-break: break-all;
+      border: 1px dashed var(--gold);
+    }
+
+    .qr-container {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    .qr-image {
+      max-width: 200px;
+      width: 100%;
+      border-radius: 0.5rem;
+      border: 2px solid var(--gold);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+    }
+
+    .cta-btn {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: none;
+      background: linear-gradient(135deg, var(--saffron), var(--amber));
+      color: white;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+      transition: all 0.3s var(--ease);
+      margin-top: 1rem;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
+    }
+
+    .cta-btn:active {
+      transform: scale(0.98);
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: #92400E;
+      margin-top: 1rem;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .dev-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dev-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .dev-item a {
+      color: var(--deep-orange);
+      text-decoration: none;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+
+    .dev-item a:hover {
+      text-decoration: underline;
+    }
+
+    .dev-bio {
+      font-size: 0.85rem;
+      color: #92400E;
+      font-style: italic;
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(255, 215, 0, 0.1);
+      border-radius: 0.5rem;
+      border-left: 3px solid var(--gold);
+    }
+
+    /* ==================== LOADING / CACHING PROGRESS ==================== */
+    .cache-progress {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 300;
+      background: rgba(255, 248, 231, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      min-width: 250px;
+      display: none;
+    }
+
+    .cache-progress.active {
+      display: block;
+      animation: slideUp 0.4s var(--ease);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(217, 119, 6, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--saffron), var(--gold));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* ==================== PWA INSTALL PROMPT ==================== */
+    .install-prompt {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 150;
+      background: linear-gradient(135deg, var(--saffron), var(--amber));
+      color: white;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.4);
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      animation: slideUp 0.5s var(--ease);
+    }
+
+    .install-prompt.active {
+      display: flex;
+    }
+
+    .install-prompt button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: white;
+      color: var(--deep-orange);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .install-prompt button:hover {
+      background: var(--warm-white);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 400px) {
+      .app-title {
+        font-size: 1.5rem;
+      }
+
+      #startBtn {
+        width: 180px;
+        height: 180px;
+      }
+
+      .maharaj-image {
+        width: 100px;
+        height: 100px;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Particles -->
+  <div class="particles">
+    <div class="particle">🌼</div>
+    <div class="particle">🪔</div>
+    <div class="particle">✨</div>
+    <div class="particle">📿</div>
+    <div class="particle">🛕</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-actions">
+      <button class="header-btn" id="websiteBtn">
+        🛕 Go to Website
+      </button>
+      <button class="header-btn" id="donateBtn">
+        🪔 Donate
+      </button>
+      <button class="header-btn" id="developerBtn">
+        👨‍💻 Developer
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Stage -->
+  <main>
+    <h1 class="app-title">🪔 Radha Naam Jaap</h1>
+    <p class="app-subtitle">One-tap devotional experience with Premanand Maharaj ji</p>
+
+    <div class="start-container">
+      <button id="startBtn" aria-label="Start • Open Radha Naam Jaap">
+        <div class="btn-inner">
+          <!-- TODO: Replace with actual Maharaj ji image -->
+          <img
+            src="./images/maharaj.jpg"
+            alt="Premanand Maharaj ji"
+            class="maharaj-image"
+            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23FFD700%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2240%22%3E🙏%3C/text%3E%3C/svg%3E'"
+          >
+          <span class="start-icon">✅</span>
+        </div>
+      </button>
+    </div>
+
+    <p class="tap-hint">✨ Tap to open the app instantly</p>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="ticker">
+      <span>जय श्री राधे कृष्ण 🌼 जय श्री राधे कृष्ण 🌼 जय श्री राधे कृष्ण 🌼</span>
+    </div>
+    <p class="copyright">© 2025 Radha Naam Jaap • Made with devotion ✨</p>
+  </footer>
+
+  <!-- Mute Toggle -->
+  <button class="mute-toggle" id="muteToggle" aria-label="Toggle sound">
+    <span id="muteIcon">🔊</span>
+  </button>
+
+  <!-- Donation Modal -->
+  <div class="modal-overlay" id="donateModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('donateModal')" aria-label="Close">✕</button>
+      <h2 class="modal-title">✨ Support Bhakti Projects</h2>
+
+      <p style="margin-bottom: 1rem; color: #92400E;">Your contribution helps spread devotion 🙏</p>
+
+      <div class="upi-id">
+        UPI ID: <strong>9546983729@fam</strong>
+      </div>
+
+      <div class="qr-container">
+        <img
+          src="https://i.postimg.cc/x8ZXrF27/Whats-App-Image-2025-07-23-at-14-05-41-82d99099.jpg"
+          alt="UPI QR Code"
+          class="qr-image"
+        >
+      </div>
+
+      <button class="cta-btn" id="upiDeeplinkBtn">
+        📱 Pay via UPI App
+      </button>
+
+      <p class="note">
+        💬 After paying, you may message the receipt on WhatsApp.
+      </p>
+    </div>
+  </div>
+
+  <!-- Developer Modal -->
+  <div class="modal-overlay" id="developerModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('developerModal')" aria-label="Close">✕</button>
+      <h2 class="modal-title">👨‍💻 Developer Info</h2>
+
+      <div class="dev-info">
+        <div class="dev-item">
+          <span>👤</span>
+          <strong>Abhishek Kumar</strong>
+        </div>
+
+        <div class="dev-item">
+          <span>📧</span>
+          <a href="mailto:abhishekyadav954698@gmail.com">abhishekyadav954698@gmail.com</a>
+        </div>
+
+        <div class="dev-item">
+          <span>💬</span>
+          <a href="https://wa.me/919546983729" target="_blank" rel="noopener">WhatsApp: +91 9546983729</a>
+        </div>
+
+        <div class="dev-item">
+          <span>📸</span>
+          <a href="https://www.instagram.com/naturelensbyabhi" target="_blank" rel="noopener">@naturelensbyabhi</a>
+        </div>
+      </div>
+
+      <p class="dev-bio">
+        🔐 Cybersecurity • Advanced Programming • Web Dev
+      </p>
+    </div>
+  </div>
+
+  <!-- Caching Progress -->
+  <div class="cache-progress" id="cacheProgress">
+    <p style="margin-bottom: 0.5rem; color: var(--deep-orange); font-weight: 600;">
+      Preparing offline experience... <span id="cachePercent">0%</span>
+    </p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- PWA Install Prompt -->
+  <div class="install-prompt" id="installPrompt">
+    <div style="flex: 1;">
+      <strong>Install App</strong>
+      <p style="font-size: 0.85rem; margin-top: 0.25rem; opacity: 0.9;">Quick access from your home screen</p>
+    </div>
+    <button id="installBtn">Install</button>
+    <button onclick="closeInstallPrompt()" style="background: transparent; color: white;">✕</button>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="bellSound" preload="auto">
+    <!-- TODO: Add your bell sound -->
+    <source src="./audio/bell.mp3" type="audio/mpeg">
+    <source src="./audio/bell.ogg" type="audio/ogg">
+  </audio>
+
+<!-- ============================================
+     VISITOR COUNTER
+     ============================================ -->
+
+<div id="visitor-counter-widget">
+    <div class="counter-container">
+        <div class="counter-icon">👁️</div>
+        <div class="counter-content">
+            <div class="counter-label">Total Visitors</div>
+            <div class="counter-number" id="visitor-count">
+                <span class="digit">0</span>
+            </div>
+            <div class="counter-status" id="counter-status">Loading...</div>
+        </div>
+        <div class="counter-sparkle">✨</div>
+    </div>
+</div>
+
+<style>
+    #visitor-counter-widget {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 9999;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .counter-container {
+        background: linear-gradient(135deg, rgba(255, 248, 231, 0.8), rgba(255, 229, 180, 0.8));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 12px 18px;
+        box-shadow:
+            0 8px 24px rgba(217, 119, 6, 0.2),
+            inset 0 1px 1px rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 215, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+        min-width: 180px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: fadeInUp 0.8s 0.5s ease-out both;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .counter-icon {
+        font-size: 2rem;
+        animation: pulse-icon 2.5s ease-in-out infinite;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        color: var(--deep-orange);
+        text-shadow: 0 0 8px rgba(255, 153, 51, 0.5);
+    }
+
+    @keyframes pulse-icon {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+    }
+
+    .counter-content {
+        text-align: left;
+    }
+
+    .counter-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #92400E;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .counter-number {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--deep-orange);
+        line-height: 1;
+        margin-top: 2px;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    .digit {
+        display: inline-block;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .counter-number.updating .digit {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    .counter-number.updated .digit {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .counter-status {
+        font-size: 0.7rem;
+        color: #92400E;
+        opacity: 0.7;
+        margin-top: 2px;
+    }
+
+    .counter-sparkle {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-size: 1rem;
+        color: var(--gold);
+        opacity: 0.8;
+        animation: sparkle-anim 2s linear infinite;
+    }
+
+    @keyframes sparkle-anim {
+        0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+        50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        #visitor-counter-widget {
+            bottom: 10px;
+            left: 10px;
+        }
+        .counter-container {
+            padding: 10px 15px;
+            min-width: auto;
+        }
+        .counter-icon {
+            font-size: 1.8rem;
+        }
+        .counter-number {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<script>
+    (function() {
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const NAMESPACE = 'radha-naam-jaap-app'; // Unique namespace for your app
+        const COUNTER_KEY = 'total-visitors'; // Unique key for your counter
+        const API_URL = `https://api.countapi.xyz`;
+        
+        const counterElement = document.getElementById('visitor-count');
+        const statusElement = document.getElementById('counter-status');
+        
+        // Function to format number with commas
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+        
+        // Function to animate number change
+        function updateCounterDisplay(count) {
+            const formattedCount = formatNumber(count);
+            if (counterElement.textContent === formattedCount) return;
+
+            counterElement.classList.add('updating');
+
+            setTimeout(() => {
+                counterElement.innerHTML = `<span class="digit">${formattedCount}</span>`;
+                counterElement.classList.remove('updating');
+                counterElement.classList.add('updated');
+                setTimeout(() => counterElement.classList.remove('updated'), 400);
+            }, 200);
+        }
+        
+        // Function to fetch and update counter
+        async function updateCounter() {
+            try {
+                // Check if the user has been counted in this session
+                const hasVisited = sessionStorage.getItem(`${NAMESPACE}-visited`);
+
+                let endpoint = 'get';
+                let statusMessage = 'Welcome Back!';
+
+                if (!hasVisited) {
+                    endpoint = 'hit'; // Increment the counter for new visitors
+                    statusMessage = 'A new devotee!';
+                    sessionStorage.setItem(`${NAMESPACE}-visited`, 'true');
+                }
+
+                const response = await fetch(`${API_URL}/${endpoint}/${NAMESPACE}/${COUNTER_KEY}`);
+                
+                if (!response.ok) {
+                    // If the 'get' or 'hit' fails, it might be because the counter doesn't exist yet.
+                    // Let's try to create it.
+                    if (response.status === 404) {
+                        await createCounter();
+                        return; // createCounter will then call updateCounter again.
+                    }
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (typeof data.value === 'number') {
+                    updateCounterDisplay(data.value);
+                    statusElement.textContent = statusMessage;
+                } else {
+                     statusElement.textContent = 'Counter unavailable';
+                }
+
+            } catch (error) {
+                console.error('Counter error:', error);
+                statusElement.textContent = 'Counter unavailable';
+                // Hide counter if there is a persistent error
+                // document.getElementById('visitor-counter-widget').style.display = 'none';
+            }
+        }
+
+        async function createCounter() {
+            try {
+                const createResponse = await fetch(`${API_URL}/create?namespace=${NAMESPACE}&key=${COUNTER_KEY}&value=1`);
+                if (!createResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${createResponse.status}`);
+                }
+                // After creating, call update again to display the initial value.
+                updateCounter();
+            } catch (error) {
+                console.error('Error creating counter:', error);
+                statusElement.textContent = 'Could not create counter';
+            }
+        }
+        
+        // Initialize the counter on page load
+        document.addEventListener('DOMContentLoaded', updateCounter);
+        
+    })();
+</script>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    const TARGET_URL = 'https://erabhishek12.github.io/radha-radha-naam-jaap-/';
+    const TARGET_URL2 = 'https://erabhishek12.github.io/radha-radha-naam-jaap-promo/';
+    const UPI_DEEPLINK = 'upi://pay?pa=9546983729@fam&pn=Abhishek%20Kumar&cu=INR&am=251&tn=Radha%20Seva';
+
+    // ==================== STATE ====================
+    let isMuted = localStorage.getItem('muted') === 'true';
+    let deferredPrompt = null;
+
+    // ==================== INITIALIZE ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      initServiceWorker();
+      initEventListeners();
+      updateMuteIcon();
+      checkInstallability();
+    });
+
+    // ==================== SERVICE WORKER & CACHING ====================
+    function initServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        // Check if already cached
+        if (localStorage.getItem('appCached') === 'true') {
+          // Already cached, skip progress
+          navigator.serviceWorker.register('./sw.js').catch(err => {
+            console.warn('SW registration failed:', err);
+          });
+          return;
+        }
+
+        // Show progress
+        const progressEl = document.getElementById('cacheProgress');
+        const fillEl = document.getElementById('progressFill');
+        const percentEl = document.getElementById('cachePercent');
+
+        progressEl.classList.add('active');
+
+        // Simulate caching progress (in reality, SW caches in background)
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 15;
+          if (progress > 100) progress = 100;
+
+          fillEl.style.width = progress + '%';
+          percentEl.textContent = Math.floor(progress) + '%';
+
+          if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              progressEl.classList.remove('active');
+              localStorage.setItem('appCached', 'true');
+            }, 500);
+          }
+        }, 200);
+
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => {
+            console.log('✅ Service Worker registered');
+          })
+          .catch(err => {
+            console.warn('SW registration failed:', err);
+            clearInterval(interval);
+            progressEl.classList.remove('active');
+          });
+      }
+    }
+
+
+    // ==================== EVENT LISTENERS ====================
+    function initEventListeners() {
+      // START button
+      document.getElementById('startBtn').addEventListener('click', handleStartClick);
+
+      // Header buttons
+      document.getElementById('websiteBtn').addEventListener('click', () => {
+        window.location.href = TARGET_URL2;
+      });
+
+      document.getElementById('donateBtn').addEventListener('click', () => {
+        openModal('donateModal');
+      });
+
+      document.getElementById('developerBtn').addEventListener('click', () => {
+        openModal('developerModal');
+      });
+
+      // UPI deeplink
+      document.getElementById('upiDeeplinkBtn').addEventListener('click', () => {
+        window.location.href = UPI_DEEPLINK;
+      });
+
+      // Mute toggle
+      document.getElementById('muteToggle').addEventListener('click', toggleMute);
+
+      // Close modals on overlay click
+      document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.classList.remove('active');
+          }
+        });
+      });
+
+      // Keyboard: Enter on START button
+      document.getElementById('startBtn').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleStartClick(e);
+        }
+      });
+    }
+
+    // ==================== START BUTTON HANDLER ====================
+    function handleStartClick(e) {
+      // Create ripple effect
+      createRipple(e);
+
+      // Play sound if not muted
+      if (!isMuted) {
+        const bell = document.getElementById('bellSound');
+        bell.currentTime = 0;
+        bell.play().catch(() => {
+          // Autoplay blocked, user needs to interact first
+          console.log('Audio autoplay blocked');
+        });
+      }
+
+      // Slight delay for animation, then navigate
+      setTimeout(() => {
+        window.location.href = TARGET_URL;
+      }, 300);
+    }
+
+    // ==================== RIPPLE EFFECT ====================
+    function createRipple(e) {
+      const button = document.getElementById('startBtn');
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
+
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+
+      button.appendChild(ripple);
+
+      setTimeout(() => ripple.remove(), 600);
+    }
+
+    // ==================== MODAL CONTROLS ====================
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ==================== MUTE TOGGLE ====================
+    function toggleMute() {
+      isMuted = !isMuted;
+      localStorage.setItem('muted', isMuted);
+      updateMuteIcon();
+    }
+
+    function updateMuteIcon() {
+      document.getElementById('muteIcon').textContent = isMuted ? '🔇' : '🔊';
+    }
+
+    // ==================== PWA INSTALL ====================
+    function checkInstallability() {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Show install prompt after 3 seconds
+        setTimeout(() => {
+          if (!localStorage.getItem('installPromptShown')) {
+            document.getElementById('installPrompt').classList.add('active');
+          }
+        }, 3000);
+      });
+
+      document.getElementById('installBtn').addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+
+        console.log('Install outcome:', outcome);
+        deferredPrompt = null;
+        closeInstallPrompt();
+      });
+    }
+
+    function closeInstallPrompt() {
+      document.getElementById('installPrompt').classList.remove('active');
+      localStorage.setItem('installPromptShown', 'true');
+    }
+
+  </script>
+
+</body>
+</html>
