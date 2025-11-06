@@ -1,122 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Visitor Counter • Demo</title>
-<style>
-  :root{
-    --accent:#FF6B35;
-  }
-  body{
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Devanagari", Arial, sans-serif;
-    margin:0; padding:0;
-    min-height:100vh; display:grid; place-items:center;
-    background: radial-gradient(1000px 600px at 50% -10%, #fff 0%, #f6f6f8 40%, #ececf2 100%);
-  }
-  .vc-box{
-    text-align:center;
-    background:rgba(255,255,255,.6);
-    backdrop-filter: blur(10px);
-    border:2px solid rgba(255,107,53,.35);
-    border-radius:18px;
-    padding:26px 40px;
-    box-shadow:0 14px 36px rgba(0,0,0,.15);
-  }
-  .vc-title{
-    font-size:14px; font-weight:800; letter-spacing:.4px;
-    text-transform:uppercase; color:#444; margin-bottom:6px;
-  }
-  .vc-number{
-    font-size:56px; font-weight:900; color:var(--accent);
-    text-shadow:0 6px 14px rgba(255,107,53,.35);
-    min-width:5ch; display:inline-block;
-  }
-  .vc-note{
-    display:none; opacity:.7; font-size:12px; margin-top:6px;
-  }
-  @media (max-width:480px){
-    .vc-box{ padding:20px 26px }
-    .vc-number{ font-size:44px }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiritual Visit Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .counter-container {
+            position: relative;
+            width: 180px;
+            background: linear-gradient(135deg, #ff9933 0%, #ff6600 100%);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4),
+                        0 0 20px rgba(255, 153, 51, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .counter-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .om-symbol {
+            text-align: center;
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .counter-label {
+            text-align: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .counter-display {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .counter-number {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6600, #ff9933);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            animation: countUp 0.5s ease-out;
+        }
+
+        @keyframes countUp {
+            from { 
+                transform: translateY(10px); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+
+        .visitors-text {
+            font-size: 9px;
+            color: #666;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .decorative-dots {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: dotPulse 1.5s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Corner positioning classes */
+        .bottom-right {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
 </head>
 <body>
+    <div class="counter-container bottom-right">
+        <div class="om-symbol">ॐ</div>
+        <div class="counter-label">Divine Visitors</div>
+        <div class="counter-display">
+            <div class="counter-number" id="visitorCount">0</div>
+            <div class="visitors-text">BLESSED SOULS</div>
+        </div>
+        <div class="decorative-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
 
-<!-- Visitor Counter -->
-<div class="vc-box" aria-live="polite">
-  <div class="vc-title">Total Visitors</div>
-  <div class="vc-number" id="vcNumber">0</div>
-  <div class="vc-note" id="vcNote">(cached view)</div>
-</div>
+    <script>
+        // Configuration
+        const COUNTER_KEY = 'spiritualVisitorCount';
+        const VISITOR_KEY = 'spiritualVisitorId';
+        const API_URL = 'YOUR_API_ENDPOINT'; // Replace with your backend API
 
-<script>
-(function(){
-  // ========= CONFIG =========
-  // Use ONLY letters, numbers, underscores. Make it unique for YOUR site.
-  const NAMESPACE = "nazaranaenterprises_shop";
-  // Single site-wide counter key. For per-page counters, use location.pathname.
-  const KEY = "site_total";
-  // ==========================
+        // Function to generate unique visitor ID
+        function generateVisitorId() {
+            return 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
 
-  const numEl  = document.getElementById('vcNumber');
-  const noteEl = document.getElementById('vcNote');
+        // Function to check if this is a unique visitor
+        function isUniqueVisitor() {
+            return !localStorage.getItem(VISITOR_KEY);
+        }
 
-  function animateTo(finalValue, duration=900){
-    finalValue = Math.max(0, Number(finalValue)||0);
-    const start = performance.now();
-    const ease = t => 1 - Math.pow(1 - t, 3); // easeOutCubic
-    function frame(now){
-      const p = Math.min(1, (now - start)/duration);
-      const val = Math.round(finalValue * ease(p));
-      numEl.textContent = val.toLocaleString('en-IN');
-      if(p < 1) requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
+        // Function to get visitor count
+        function getVisitorCount() {
+            const count = localStorage.getItem(COUNTER_KEY);
+            return count ? parseInt(count) : 0;
+        }
 
-  // cache keys
-  const sessionKey  = `vc_counted_${KEY}`;
-  const cachedKey   = `vc_last_value_${KEY}`;
-  const already     = sessionStorage.getItem(sessionKey);
+        // Function to increment visitor count
+        function incrementVisitorCount() {
+            let count = getVisitorCount();
+            count++;
+            localStorage.setItem(COUNTER_KEY, count);
+            return count;
+        }
 
-  // endpoints
-  const base = "https://api.countapi.xyz";
-  const enc  = s => encodeURIComponent(s);
-  const CREATE = `${base}/create?namespace=${enc(NAMESPACE)}&key=${enc(KEY)}&value=0`;
-  const GET    = `${base}/get/${enc(NAMESPACE)}/${enc(KEY)}`;
-  const HIT    = `${base}/hit/${enc(NAMESPACE)}/${enc(KEY)}`;
+        // Function to animate number change
+        function animateCount(target) {
+            const element = document.getElementById('visitorCount');
+            const start = parseInt(element.textContent) || 0;
+            const duration = 1000;
+            const startTime = performance.now();
 
-  // show from cache if network blocked
-  function showCached(){
-    const v = Number(localStorage.getItem(cachedKey) || 0);
-    if (v > 0) {
-      animateTo(v, 500);
-      noteEl.style.display = 'block';
-    } else {
-      numEl.textContent = "0";
-    }
-  }
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const current = Math.floor(start + (target - start) * easeOutQuad(progress));
+                element.textContent = current.toLocaleString();
 
-  // Step 1: try to create (idempotent). Ignore failure.
-  fetch(CREATE, {mode:'cors'}).finally(() => {
-    // Step 2: hit (if not counted this session) else get.
-    const url = already ? GET : HIT;
-    fetch(url, {cache:'no-store', mode:'cors'})
-      .then(r => r.json())
-      .then(d => {
-        const val = (d && typeof d.value === 'number') ? d.value : 0;
-        localStorage.setItem(cachedKey, String(val));
-        animateTo(val);
-        if (!already) sessionStorage.setItem(sessionKey, '1');
-      })
-      .catch(() => {
-        // Fallback to cached if API blocked by ad-block or offline
-        showCached();
-      });
-  });
-})();
-</script>
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
 
+            function easeOutQuad(t) {
+                return t * (2 - t);
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Initialize counter
+        function initCounter() {
+            let count = getVisitorCount();
+
+            // Check if unique visitor
+            if (isUniqueVisitor()) {
+                const visitorId = generateVisitorId();
+                localStorage.setItem(VISITOR_KEY, visitorId);
+                count = incrementVisitorCount();
+                
+                // Optional: Send to backend
+                // sendToBackend(visitorId, count);
+            }
+
+            animateCount(count);
+        }
+
+        // Optional: Function to send data to backend
+        function sendToBackend(visitorId, count) {
+            fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    visitorId: visitorId,
+                    count: count,
+                    timestamp: new Date().toISOString()
+                })
+            }).catch(err => console.log('Backend not configured'));
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', initCounter);
+    </script>
 </body>
 </html>
