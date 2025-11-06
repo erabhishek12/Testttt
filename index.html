@@ -5,140 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spiritual Visit Counter</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            background: transparent;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+body {
+    background: transparent; /* keep page bg as-is */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .counter-container {
-            position: relative;
-            width: 180px;
-            background: linear-gradient(135deg, #ff9933 0%, #ff6600 100%);
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4),
-                        0 0 20px rgba(255, 153, 51, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            overflow: hidden;
-        }
+/* === PILL CONTAINER (button-like) === */
+.counter-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 240px;            /* wider, like a button */
+    height: 56px;                /* pill height */
+    padding: 0 28px;             /* horizontal padding */
+    border-radius: 9999px;       /* full pill */
+    background: linear-gradient(180deg, #ff7a52 0%, #ff5e3a 100%);
+    border: none;
 
-        .counter-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.1), 
-                transparent);
-            animation: shine 3s infinite;
-        }
+    /* soft depth + inner shine similar to the reference */
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.45),         /* outer drop shadow */
+        0 2px 0 rgba(255, 255, 255, 0.05),       /* subtle top rim */
+        inset 0 1px 0 rgba(255, 255, 255, 0.35), /* inner top highlight */
+        inset 0 -10px 16px rgba(0, 0, 0, 0.18);  /* inner bottom shading */
+    overflow: hidden;
+    cursor: default;
+    transition: transform .08s ease, box-shadow .12s ease, filter .12s ease;
+}
 
-        @keyframes shine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+/* shimmering top highlight band */
+.counter-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0) 40% );
+    pointer-events: none;
+}
 
-        .om-symbol {
-            text-align: center;
-            font-size: 28px;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            margin-bottom: 8px;
-            animation: pulse 2s ease-in-out infinite;
-        }
+/* faint glow ring */
+.counter-container::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 9999px;
+    box-shadow: 0 0 40px rgba(255, 120, 70, 0.25);
+    pointer-events: none;
+}
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
+/* interactive feel (optional) */
+.counter-container:hover {
+    filter: brightness(1.02);
+}
+.counter-container:active {
+    transform: translateY(1px);
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.45),
+        0 2px 0 rgba(255, 255, 255, 0.04),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.2);
+}
 
-        .counter-label {
-            text-align: center;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
+/* === CONTENT INSIDE THE PILL === */
+/* keep your Om/icon—smaller and inline */
+.om-symbol {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    margin: 0;                   /* no vertical gap in pill */
+    animation: pulse 2s ease-in-out infinite;
+}
 
-        .counter-display {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+/* compact label */
+.counter-label {
+    color: rgba(255,255,255,0.95);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0;                   /* inline */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
 
-        .counter-number {
-            font-size: 26px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ff6600, #ff9933);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            animation: countUp 0.5s ease-out;
-        }
+/* remove card look; make inline holder for numbers */
+.counter-display {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+}
 
-        @keyframes countUp {
-            from { 
-                transform: translateY(10px); 
-                opacity: 0; 
-            }
-            to { 
-                transform: translateY(0); 
-                opacity: 1; 
-            }
-        }
+/* bold number like a CTA text */
+.counter-number {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #fff, #ffe7dc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    animation: countUp 0.5s ease-out;
+}
 
-        .visitors-text {
-            font-size: 9px;
-            color: #666;
-            margin-top: 4px;
-            font-weight: 600;
-        }
+.visitors-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
 
-        .decorative-dots {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            margin-top: 8px;
-        }
+/* small decorative dots can sit at the end */
+.decorative-dots {
+    display: inline-flex;
+    gap: 5px;
+    margin: 0 0 0 4px;
+}
+.dot {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    animation: dotPulse 1.5s ease-in-out infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
 
-        .dot {
-            width: 6px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            animation: dotPulse 1.5s ease-in-out infinite;
-        }
+/* pulse + dot animations kept */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+@keyframes countUp {
+    from { transform: translateY(6px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+@keyframes dotPulse {
+    0%, 100% { transform: scale(1); opacity: 0.65; }
+    50% { transform: scale(1.25); opacity: 1; }
+}
 
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
+/* corner positioning helper (unchanged) */
+.bottom-right {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
 
-        @keyframes dotPulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.3); opacity: 1; }
-        }
-
-        /* Corner positioning classes */
-        .bottom-right {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
+/* responsive: keep pill shape, allow wrap if needed */
+@media (max-width: 420px) {
+    .counter-container {
+        min-width: 200px;
+        height: 52px;
+        padding: 0 20px;
+        gap: 8px;
+    }
+    .counter-number { font-size: 18px; }
+    .counter-label  { font-size: 11px; }
+    .visitors-text  { font-size: 10px; }
+}
     </style>
 </head>
 <body>
